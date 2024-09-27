@@ -5,66 +5,51 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class MainViewModel:ViewModel() {
+class MainViewModel : ViewModel() {
 
     var resultState by mutableStateOf("")
         private set
 
-    var countTime by mutableStateOf(0)
+    var countTime1 by mutableStateOf(0)
         private set
-    private var oneCount by mutableStateOf(false)
 
-    fun fetchData(){
-      val job =    viewModelScope.launch {
-            for (i in 1..5){
-                delay(1000)
-                countTime = i
-            }
-          oneCount = true
+    var countTime2 by mutableStateOf(0)
+        private set
+
+    private var job: Job? = null
+
+    // Contador 1
+    private suspend fun startFirstCounter() {
+        for (i in 1..5) {
+            delay(1000)  // Simula el delay de 1 segundo por cada ciclo
+            countTime1 = i
         }
-
-        viewModelScope.launch {
-            delay(5000)
-            resultState = "Respuesta desde el servidor Web"
-        }
-
-        if( oneCount){
-            job.cancel()
-        }
-
     }
 
-
-
-
-
-
-    /*
-      Thread trabaja en el mismo contexto de la IU
-
-    fun bloqueoApp(){
-        Thread.sleep(5000)
-        resultState = "Respuesta del Servidor Web"
-
-    }
-  */
-
-    /*
-    fun fetchData(){
-        viewModelScope.launch {
-            delay(5000)
-            resultState = "Respuesta desde el Servidor Web"
+    // Contador 2 (solo empieza cuando el primero finaliza)
+    private suspend fun startSecondCounter() {
+        for (i in 1..5) {
+            delay(1000)
+            countTime2 = i
         }
-    }*/
+    }
 
+    // Función para ejecutar ambos contadores secuencialmente
+    fun startCounters() {
+        job = viewModelScope.launch {
+            startFirstCounter()  // Primero ejecuta el contador 1
+            startSecondCounter()  // Luego ejecuta el contador 2
+            resultState = "Contadores completados"
+        }
+    }
 
-
-
-
-
-
-
+    // Función para cancelar ambos contadores
+    fun cancelCounters() {
+        job?.cancel()
+        resultState = "Contadores cancelados"
+    }
 }

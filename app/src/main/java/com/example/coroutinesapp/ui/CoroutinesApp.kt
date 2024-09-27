@@ -22,12 +22,10 @@ import com.example.coroutinesapp.R
 import com.example.coroutinesapp.viewmodel.MainViewModel
 
 @Composable
-fun CoroutinesApp(viewModel: MainViewModel  ,modifier: Modifier = Modifier){
+fun CoroutinesApp(viewModel: MainViewModel, modifier: Modifier = Modifier) {
     var changeColor by remember {
         mutableStateOf(false)
     }
-
-
 
     Column(
         modifier = modifier
@@ -35,30 +33,40 @@ fun CoroutinesApp(viewModel: MainViewModel  ,modifier: Modifier = Modifier){
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
+        // Botón para cambiar color
         Button(onClick = {
-                changeColor = !changeColor
-
+            changeColor = !changeColor
         },
             colors = ButtonDefaults.buttonColors(
-                if( changeColor ) Color.Blue else Color.Red
+                if (changeColor) Color.Blue else Color.Red
             )
-
-            ) {
+        ) {
             Text(text = stringResource(R.string.cambio_de_color))
         }
-        Spacer(modifier = modifier.height(30.dp)  )
-        
-        Text(text = "${viewModel.countTime} [s]")
-        Text(text = viewModel.resultState  )
+
         Spacer(modifier = modifier.height(30.dp))
+
+        // Mostrar tiempos de los dos contadores
+        Text(text = "Contador 1: ${viewModel.countTime1} [s]")
+        Text(text = "Contador 2: ${viewModel.countTime2} [s]")
+        Text(text = viewModel.resultState)
+
+        Spacer(modifier = modifier.height(30.dp))
+
+        // Botón para iniciar los contadores
         Button(onClick = {
-            viewModel.fetchData()
+            viewModel.startCounters()
         }) {
-            Text(text =
-            stringResource(id = R.string.realizar_consulta) )
+            Text(text = stringResource(id = R.string.realizar_consulta))
+        }
+
+        Spacer(modifier = modifier.height(30.dp))
+
+        // Botón para cancelar los contadores
+        Button(onClick = {
+            viewModel.cancelCounters()
+        }) {
+            Text(text = "Cancelar Contadores")
         }
     }
-
-
 }
